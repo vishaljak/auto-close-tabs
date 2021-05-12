@@ -1,4 +1,5 @@
-const timeLimit = 300;
+const TIME_LIMIT = 1000000;
+
 let tabRecords = [];
 
 chrome.tabs.onActivated.addListener((tab) => {
@@ -31,18 +32,31 @@ chrome.tabs.onActivated.addListener((tab) => {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	
+
 	if (request.message == "close-tabs") {
+		closeTabRecord = [];
+
+		for (let i = 0; i < tabRecords.length; i++) {
+			if ((new Date().getTime() - tabRecords[i].timeOpened) > timeLimit) {
+				closeTabRecord.push(tabRecords[i].tabId);
+			}
+		}
+
+		for (let i = 0; i < closeTabRecord.length; i++) {
+			chrome.tabs.remove(closeTabRecord[i], () => {
+				console.log(`${closeTabRecord[i]} closed`);
+			});
+		}
+
 		chrome.tabs.query({}, (tabs) => {
-			
+
 			for (let i=0; i<tabs.length; i++) {
 				console.log(tabs[i]);
-				// if (tabs[i].timeCreated > timeLimit) {
-				// 	console.log(tabs[i]);
-				// }
+
 			}
 
 		})
+
 		sendResponse({farewell: "goodbye"});
 	}
 });

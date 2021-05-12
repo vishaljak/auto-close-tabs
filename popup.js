@@ -9,12 +9,12 @@ testTabs.addEventListener("click", async () => {
 
 	chrome.scripting.executeScript({
 		target: { tabId: current.id },
-		function: whonde,
+		function: sendSignal,
 	});
 });
 
-function whonde() {
-	
+function sendSignal() {
+
 	chrome.runtime.sendMessage({message: "close-tabs"});
-	
+
 }
